@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # パスフレーズ
-passphrase="hoge" 
+passphrase=$GPG_PASSPHARASE
 # パスワードが保存されたファイル
 encrypted_file="managed_passwd.txt.gpg"
 
@@ -46,7 +46,6 @@ while true; do
     
     # サービスが存在したら
     if [ $? = 0 ]; then
-      echo "成功です"
       service=$(echo "$matched_line" | sed -E 's/^(.+):(.+):(.+)$/\1/')
       user=$(echo "$matched_line" | sed -E 's/^(.+):(.+):(.+)$/\2/')
       password=$(echo "$matched_line" | sed -E 's/^(.+):(.+):(.+)$/\3/')
