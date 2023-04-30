@@ -45,7 +45,7 @@ do
       read -p "サービス名を入力してください: " service
 
       # 一時ファイルからサービス名を検索
-      grep_result=$(grep -w $service temp.txt)
+      grep_result=$(grep "^${service}:.*:.*$" temp.txt)
       
       # 検索結果があれば､ユーザー名とパスワードを表示
       if [ $? = 0 ]; then
