@@ -13,7 +13,7 @@ do
     "Add Password" )
       read -p "サービス名を入力してください: " service
       read -p "ユーザー名を入力してください: " user
-      read -p "パスワードを入力してください: " password
+      read -s -p "パスワードを入力してください: " password
 
       # 暗号化ファイルがあれ複合して一時ファイルに出力､なければ空ファイルを作成
       if [ -e $encrypted_file ]; then
