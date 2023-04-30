@@ -4,9 +4,9 @@ require_relative 'card'
 class Deck
   def initialize
     @cards = []
-    Card::SUITS.each do |suit|
-      Card::NUMBERS.each do |number|
-        @cards << Card.new(suit, number)
+    Card::SUIT.each do |suit|
+      Card::NUMBER.each do |i|
+        @cards << Card.new(suit, i)
       end
     end
     @cards.shuffle!
@@ -15,5 +15,4 @@ class Deck
   def draw
     @cards.shift
   end
-
 end
