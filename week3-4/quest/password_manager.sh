@@ -13,7 +13,7 @@ do
     "Add Password" )
       read -p "サービス名を入力してください: " service
       read -p "ユーザー名を入力してください: " user
-      read -p "パスワードを入力してください: " password
+      read -s -p "パスワードを入力してください: " password
 
       # 暗号化ファイルがあれ複合して一時ファイルに出力､なければ空ファイルを作成
       if [ -e $encrypted_file ]; then
@@ -45,7 +45,7 @@ do
       read -p "サービス名を入力してください: " service
 
       # 一時ファイルからサービス名を検索
-      grep_result=$(grep -w $service temp.txt)
+      grep_result=$(grep "^${service}:.*:.*$" temp.txt)
       
       # 検索結果があれば､ユーザー名とパスワードを表示
       if [ $? = 0 ]; then

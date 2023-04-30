@@ -1,21 +1,13 @@
 require 'debug'
+require_relative 'deck'
 
 class Player
-  attr_reader :name, :cards
-
-  def initialize(name, hand)
+  def initialize(name)
     @name = name
     @cards = []
-    @hand = hand
   end
 
-  def draw(deck, number)
-    number.times do
-      @cards << deck.draw
-    end
-  end 
-
-  def hand
-    @hand.hand(@cards)
+  def draw(deck)
+    @cards << deck.draw
   end
 end
