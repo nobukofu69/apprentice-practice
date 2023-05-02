@@ -1,10 +1,13 @@
 require 'debug'
 
-class Dealer < Player
-  def initialize(name)
-    @name = name
-    @cards = []
-  end
+class Cpu < Player
+  @@num_of_cpu = 0
+
+  def initialize
+    super
+    @@num_of_cpu += 1
+    @name = "CPU#{@@num_of_cpu}"
+  end  
 
   def hit_or_stand(deck)
     # 17点以上の場合､スタンドする
