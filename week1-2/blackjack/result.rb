@@ -1,29 +1,42 @@
 require 'debug'
 
 class Result
-  def initialize(dealer, *players)
+  def initialize(dealer, players)
     @dealer = dealer
     @players = players
   end
 
   def judge
-    puts "#{@dealer.name}の得点は#{@dealer.score}です。"
+    puts '結果発表！' 
     @players.each do |player|
-      # プレーヤーがバーストしていた場合､次のプレーヤーの判定へ
-      break if player.score > 21
-      puts "#{player.name}の得点は#{player.score}です。"
-      # ディーラーがバースト､またはプレーヤーの得点がディーラーを上回っている場合
+      # プレーヤーがサレンダーまたはバーストしていた場合
+      next if player.score > 21 || player.surrender_flag
+
+      # プレーヤーかディーラーにブラックジャックフラグが立っている場合
+      if player.blackjack_flag 
+        player.money += player.bet_size * 2.5
+        puts "#{player.name}の勝ちです！"
+        puts "#{player.name}の持ち金は#{player.money.to_i}です｡"
+        next
+      elsif @dealer.blackjack_flag
+        puts "#{player.name}の負けです｡"
+        puts "#{player.name}の持ち金は#{player.money.to_i}です｡"
+        next
+      end
+
+      # プレーヤーとディーラーのブラックジャックフラグが同じ場合
       if @dealer.score > 21 || player.score > @dealer.score
+        player.money += player.bet_size * 2
         puts "#{player.name}の勝ちです！"
       elsif player.score < @dealer.score
         puts "#{player.name}の負けです｡"
-      else # 同点の場合
-        puts '引き分けです｡'
-        next
+      else 
+        player.money += player.bet_size
+        puts "#{player.name}は引き分けです｡"
       end
+      # プレーヤーの持ち金を表示
+      puts "#{player.name}の持ち金は#{player.money.to_i}です｡"
     end
   end
 end
 
-
-# 計算中

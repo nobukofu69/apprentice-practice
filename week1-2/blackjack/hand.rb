@@ -1,6 +1,6 @@
 require 'debug'
 
-# 手札の合計値を計算するクラス
+# 手札に関するクラス
 class Hand
   def initialize(cards)
     @cards = cards
