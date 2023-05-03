@@ -14,31 +14,29 @@ class Game
     @dealer = Dealer.new('ディーラー')
     @cpu1 = Cpu.new
     @cpu2 = Cpu.new
+    @game_members = [@player, @cpu1, @cpu2, @dealer]
   end
 
   def play
     puts 'ブラックジャックを開始します。'
 
-    @player.draw(@deck, 2)
-    puts "#{@player.name}の引いたカードは#{@player.cards[0].to_s}です。"
-    puts "#{@player.name}の引いたカードは#{@player.cards[1].to_s}です。"
-    puts "#{@cpu1.name}の引いたカードは#{@cpu1.cards[0]}.to_sです｡"
-    puts "#{@cpu1.name}の引いたカードは#{@cpu1.cards[1]}.to_sです｡"
-    puts "#{@cpu2.name}の引いたカードは#{cpu2.cards[0]}.to_sです｡"
-    puts "#{@cpu2.name}の引いたカードは#{cpu2.cards[1]}.to_sです｡"
-    @dealer.draw(@deck, 2)
-    puts "#{@dealer.name}の引いたカードは#{@dealer.cards[0].to_s}です。"
-    puts 'ディーラーの引いたカードはわかりません。'
+    # ゲームメンバーにカードを2枚ずつ配る
+    @game_members.each do |member|
+      member.deal(@deck)
+    end
 
-    # CPUの設計中★
+    # ゲームメンバーがカードを引くかどうかを決める
+    @game_members.each do |member|
+      member.hit_or_stand(@deck)
+      # プレーヤーが全員バーストしていた場合､ゲームを終了する
+      if Player.player_count == 0
+        puts '全てのプレーヤーがバーストしたため､ゲームを終了します｡'
+        exit
+      end
+    end
 
-    @player.hit_or_stand(@deck)
-    # プレーヤーが全員バーストしていた場合､ゲームを終了する
-    return if Player.player_count == 0
-    
-    puts "#{@dealer.name}の引いたカードは#{@dealer.cards[1].to_s}でした｡"
-    @dealer.hit_or_stand(@deck)
-    Result.new(@dealer, @player).judge
+
+    Result.new(@dealer, @player, @cpu1, @cpu2).judge
   end
 end
 
