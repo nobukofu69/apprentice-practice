@@ -10,8 +10,12 @@ class Cpu < Player
     @cards = []
   end  
 
+  # カードを引くかどうかを決める
   def hit_or_stand(deck)
-    puts "#{@name}の得点は#{score}です｡"
+    # ブラックジャックの場合､メソッドを抜ける
+    return if @black_jack_flag
+
+    puts "#{@name}の現在の得点は#{score}です｡"
     # 17点以上の場合､スタンドする
     if score >= 17
       puts "#{@name}はスタンドしました｡"
@@ -24,13 +28,20 @@ class Cpu < Player
       puts "#{@name}の引いたカードは#{@cards.last}です。"
     end
 
-    puts "#{name}の得点は#{score}です。"
-    # 得点に応じたメッセージを表示する
+    # 21点を超えた場合､メソッドを抜ける
+    return if score > 21
+
+    # 17点以上の場合､スタンドする
+    puts "#{@name}の得点は#{score}です｡"
+    puts "#{@name}はスタンドしました｡"
+  end
+
+  # バーストしているか確認し､バーストしていたらプレイヤーの人数を減らす
+  def check_burst
     if score > 21
-      puts "#{@name}はバーストしました｡"
+      puts "#{name}の得点は#{score}です。"
+      puts "#{name}はバーストしました"
       @@player_count -= 1
-    else
-      puts "#{@name}はスタンドしました｡"
     end
   end
 end

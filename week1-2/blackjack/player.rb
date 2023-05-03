@@ -3,7 +3,7 @@ require_relative 'hand'
 
 class Player
   @@player_count ||= 0
-  attr_reader :name, :cards
+  attr_reader :name, :cards, :black_jack_flag
 
   # プレイヤーの人数を返すクラス
   def self.player_count
@@ -14,6 +14,7 @@ class Player
     @@player_count += 1
     @name = name
     @cards = []
+    @black_jack_flag = false
   end
 
   # カードを引く
@@ -23,7 +24,12 @@ class Player
     end
   end
 
-  # ディールする
+  # 現在の得点を表示する
+  def score
+    Hand.new(@cards).score
+  end
+
+  # ディールして､引いたカードを表示する
   def deal(deck)
     2.times do |i|
       draw(deck)
@@ -31,32 +37,49 @@ class Player
     end
   end
 
-  # 現在の得点を返す
-  def score
-    Hand.new(@cards).score
+  # ブラックジャックだった場合､メッセージを表示してフラグを立てる
+  def announce_blackjack
+    if score == 21 && @cards.size == 2
+      puts "#{@name}はブラックジャックです！" 
+      @black_jack_flag = true
+    end
   end
 
   # ヒットするかスタンドするかを決める
   def hit_or_stand(deck)
-    # 21点未満の場合､カードを引くかどうかを選択
+    # ブラックジャックの場合､メソッドを抜ける
+    return if @black_jack_flag
+
+    # 21点未満の場合､Nを押すまでカードを引くか選択し続ける
     while score < 21
       puts "#{@name}の現在の得点は#{score}です。カードを引きますか？（Y/N）"
       answer = gets.chomp.downcase
+      # yが入力された場合､カードを引く
       if answer == 'y'
         draw(deck)
-        puts "#{@name}の引いたカードは#{@cards.last.to_s}です。"
+        puts "#{@name}の引いたカードは#{@cards.last}です。"
+      # nが入力された場合､スタンドする
       elsif answer == 'n'
+        puts "#{@name}はスタンドしました｡"
         return
-      else
+      # y/n以外が入力された場合､もう一度入力を促す
+      else 
         next
       end
     end
+    # ループを抜けた時点で21点の場合､スタンドする
+    if score == 21
+      puts "#{@name}の得点は#{score}です。"
+      puts "#{@name}はスタンドしました｡"
+    end
+  end
 
-    # 21点の場合どうする？
-
-    # 21点を超えるた場合の処理
-    puts "#{name}の得点は#{score}です。"
-    puts "バーストしたため#{@name}の負けです｡"
-    @@player_count -= 1
+  # バーストしていた場合､プレイヤーの人数を減らす
+  def check_burst
+    if score > 21
+      puts "#{name}の得点は#{score}です。"
+      puts "#{@name}はバーストしました｡"
+      @@player_count -= 1
+    end
   end
 end

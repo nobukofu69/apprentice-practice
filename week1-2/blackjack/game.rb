@@ -5,6 +5,7 @@ require_relative 'dealer'
 require_relative 'result'
 require_relative 'cpu'
 
+# ブラックジャックのゲームを管理するクラス
 class Game
   attr_reader :player, :deck
 
@@ -14,30 +15,49 @@ class Game
     @dealer = Dealer.new('ディーラー')
     @cpu1 = Cpu.new
     @cpu2 = Cpu.new
-    @game_members = [@player, @cpu1, @cpu2, @dealer]
+    @player_members = [@player, @cpu1, @cpu2]
   end
 
   def play
     puts 'ブラックジャックを開始します。'
 
-    # ゲームメンバーにカードを2枚ずつ配る
-    @game_members.each do |member|
-      member.deal(@deck)
+    # プレーヤーにカードを2枚ずつ配る｡
+    # ブラックジャックだった場合､メッセージを表示する
+    @player_members.each do |member| 
+      member.deal(@deck) 
+      member.announce_blackjack
     end
+    
+    # ディーラーにカードを2枚配る｡
+    @dealer.deal(@deck)
 
-    # ゲームメンバーがカードを引くかどうかを決める
-    @game_members.each do |member|
+    # プレーヤーがヒットするかスタンドするかを決める｡
+    # またプレーヤーがバーストしていた場合､メッセージを表示する
+    @player_members.each do |member|
       member.hit_or_stand(@deck)
-      # プレーヤーが全員バーストしていた場合､ゲームを終了する
-      if Player.player_count == 0
-        puts '全てのプレーヤーがバーストしたため､ゲームを終了します｡'
-        exit
-      end
+      member.check_burst
     end
 
+    # プレーヤーが全員バーストしていた場合､ゲームを終了する
+    if Player.player_count.zero?
+      puts "プレーヤーの負けです｡\nゲームを終了します｡"
+      exit
+    end
 
-    Result.new(@dealer, @player, @cpu1, @cpu2).judge
+    # 参加プレーヤーが残っている場合､ディーラーの2枚目のカードを表示する
+    puts "#{@dealer.name}の引いた2枚目のカードは#{@dealer.cards[1]}でした。"
+    # ディーラーがブラックジャックだった場合､メッセージを表示する
+    @dealer.announce_blackjack
+    # ディーラーが17点以上になるまでヒットする
+    @dealer.auto_hit(@deck)
+    # ディーラーがバーストしていた場合､メッセージを表示する
+    @dealer.check_burst
+    
+    # 結果を表示する
+    Result.new(@dealer, @player_members).judge
   end
 end
 
 Game.new.play
+
+# 21点の場合､スタンドするを表示 プレーヤー
