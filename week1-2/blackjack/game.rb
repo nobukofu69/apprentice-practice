@@ -21,6 +21,9 @@ class Game
   def play
     puts 'ブラックジャックを開始します。'
 
+    # プレーヤーがべットする
+    @player_members.each { |member| member.set_bet_amount}
+
     # プレーヤーにカードを2枚ずつ配る｡
     # ブラックジャックだった場合､メッセージを表示する
     @player_members.each do |member| 
@@ -59,5 +62,3 @@ class Game
 end
 
 Game.new.play
-
-# 21点の場合､スタンドするを表示 プレーヤー

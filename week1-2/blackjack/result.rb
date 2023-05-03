@@ -12,27 +12,31 @@ class Result
       # プレーヤーがバーストしていた場合､次のプレーヤーの判定へ
       next if player.score > 21
 
-      # ブラックジャックフラグが立っている場合の処理
-      if player.black_jack_flag && @dealer.black_jack_flag
-        puts "#{player.name}は引き分けです｡"
-        next
-      elsif player.black_jack_flag 
+      # プレーヤーかディーラーにブラックジャックフラグが立っている場合
+      if player.blackjack_flag 
+        player.money += player.bet_size * 2.5
         puts "#{player.name}の勝ちです！"
+        puts "#{player.name}の持ち金は#{player.money.to_i}です｡"
         next
-      elsif @dealer.black_jack_flag
+      elsif @dealer.blackjack_flag
         puts "#{player.name}の負けです｡"
+        puts "#{player.name}の持ち金は#{player.money.to_i}です｡"
         next
       end
 
-      # ブラックジャックフラグがない場合の処理
+      # プレーヤーとディーラーのブラックジャックフラグが同じ場合
       if @dealer.score > 21 || player.score > @dealer.score
+        player.money += player.bet_size * 2
         puts "#{player.name}の勝ちです！"
       elsif player.score < @dealer.score
         puts "#{player.name}の負けです｡"
       else 
+        player.money += player.bet_size
         puts "#{player.name}は引き分けです｡"
         next
       end
+      # プレーヤーの持ち金を表示
+      puts "#{player.name}の持ち金は#{player.money.to_i}です｡"
     end
   end
 end

@@ -3,7 +3,8 @@ require_relative 'hand'
 
 class Player
   @@player_count ||= 0
-  attr_reader :name, :cards, :black_jack_flag
+  attr_reader :name, :cards, :bet_size, :blackjack_flag
+  attr_accessor :money
 
   # プレイヤーの人数を返すクラス
   def self.player_count
@@ -14,7 +15,22 @@ class Player
     @@player_count += 1
     @name = name
     @cards = []
-    @black_jack_flag = false
+    @money = 10_000
+    @bet_size = 0
+    @blackjack_flag = false
+  end
+
+  # ベットする
+  def set_bet_amount
+    while true
+      puts 'ベットしてください｡'
+      @bet_size = gets.chomp.to_i
+      # bet_siseは 1以上10000未満でのみ受け付ける
+      if (1..10_000).include?(@bet_size)
+        @money -= @bet_size
+        break
+      end
+    end
   end
 
   # カードを引く
@@ -41,14 +57,14 @@ class Player
   def announce_blackjack
     if score == 21 && @cards.size == 2
       puts "#{@name}はブラックジャックです！" 
-      @black_jack_flag = true
+      @blackjack_flag = true
     end
   end
 
   # ヒットするかスタンドするかを決める
   def hit_or_stand(deck)
     # ブラックジャックの場合､メソッドを抜ける
-    return if @black_jack_flag
+    return if @blackjack_flag
 
     # 21点未満の場合､Nを押すまでカードを引くか選択し続ける
     while score < 21
@@ -74,11 +90,12 @@ class Player
     end
   end
 
-  # バーストしていた場合､プレイヤーの人数を減らす
+  # バーストしていた場合､プレイヤーの人数を減らしてメッセージを表示する
   def check_burst
     if score > 21
-      puts "#{name}の得点は#{score}です。"
+      puts "#{@name}の得点は#{score}です。"
       puts "#{@name}はバーストしました｡"
+      puts "#{@name}の持ち金は#{@money}円です。"
       @@player_count -= 1
     end
   end

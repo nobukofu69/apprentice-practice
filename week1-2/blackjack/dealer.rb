@@ -4,6 +4,7 @@ class Dealer < Player
   def initialize(name)
     @name = name
     @cards = []
+    @blackjack_flag = false
   end
 
   # ディールする
@@ -16,7 +17,7 @@ class Dealer < Player
   # 17点以上になるまでヒットし続ける
   def auto_hit(deck)
     # ブラックジャックの場合､メソッドを抜ける
-    return if @black_jack_flag
+    return if @blackjack_flag
     
     puts "#{@name}の得点は#{score}です。"
     # 17点以上の場合､メソッドを抜ける
