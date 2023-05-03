@@ -3,8 +3,9 @@ require_relative 'hand'
 
 class Player
   @@player_count ||= 0
-  attr_reader :name, :cards, :bet_size, :blackjack_flag
-  attr_accessor :money
+  attr_reader :name, :bet_size, 
+              :blackjack_flag, :double_down_flag, :splitting_pairs, :surrender_flag
+  attr_accessor :money,:cards
 
   # プレイヤーの人数を返すクラス
   def self.player_count
@@ -17,7 +18,11 @@ class Player
     @cards = []
     @money = 10_000
     @bet_size = 0
+    # 以下各種フラグ
     @blackjack_flag = false
+    @double_down_flag = false
+    @splitting_pairs = false
+    @surrender_flag = false
   end
 
   # ベットする
@@ -45,6 +50,32 @@ class Player
     Hand.new(@cards).score
   end
 
+  # プレーヤーオプションを選択する
+  def player_options(dealer_score)
+    while true
+      puts "現在の得点: #{score}, ディーラーの得点: #{dealer_score}"
+      puts "オプション:\n 1:ダブルダウン 2:スプリット 3:サレンダー 4:選択しない"
+      selected = gets.chomp.to_i
+      case selected
+      when 1
+        double_down
+      when 2
+        splitting_pairs
+      # サレンダー
+      when 3 
+        # サレンダーフラグ立ち､ベット額の半分が返ってくる
+        @surrender_flag = true
+        @money += (@bet_size / 2)
+        @@player_count -= 1
+        puts "#{@name}はサレンダーしました｡"
+        puts "#{@name}の持ち金は#{@money}円です。"
+        return
+      when 4
+        return
+      end
+    end
+  end
+
   # ディールして､引いたカードを表示する
   def deal(deck)
     2.times do |i|
@@ -63,8 +94,8 @@ class Player
 
   # ヒットするかスタンドするかを決める
   def hit_or_stand(deck)
-    # ブラックジャックの場合､メソッドを抜ける
-    return if @blackjack_flag
+    # ブラックジャックまたはサレンダーの場合､メソッドを抜ける
+    return if @blackjack_flag || @surrender_flag
 
     # 21点未満の場合､Nを押すまでカードを引くか選択し続ける
     while score < 21

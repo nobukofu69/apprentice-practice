@@ -20,6 +20,7 @@ class Game
 
   def play
     puts 'ブラックジャックを開始します。'
+    binding.break
 
     # プレーヤーがべットする
     @player_members.each { |member| member.set_bet_amount}
@@ -34,6 +35,13 @@ class Game
     # ディーラーにカードを2枚配る｡
     @dealer.deal(@deck)
 
+    # 非ブラックジャックのプレーヤーにオプションを表示､選択させる
+    @player_members.each do |member| 
+      unless member.blackjack_flag 
+        member.player_options(@dealer.cards[0].number)
+      end
+    end
+
     # プレーヤーがヒットするかスタンドするかを決める｡
     # またプレーヤーがバーストしていた場合､メッセージを表示する
     @player_members.each do |member|
@@ -41,9 +49,9 @@ class Game
       member.check_burst
     end
 
-    # プレーヤーが全員バーストしていた場合､ゲームを終了する
+    # アクティブなプレーヤーがいない場合､ゲームを終了する
     if Player.player_count.zero?
-      puts "プレーヤーの負けです｡\nゲームを終了します｡"
+      puts 'ゲームを終了します｡'
       exit
     end
 

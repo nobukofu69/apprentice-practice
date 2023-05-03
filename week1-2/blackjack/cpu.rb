@@ -10,13 +10,44 @@ class Cpu < Player
     @cards = []
     @money = 10_000
     @bet_size = 0
+    # 以下各種フラグ
     @blackjack_flag = false
+    @double_down_flag = false
+    @splitting_pairs = false
+    @surrender_flag = false
   end  
 
   # 手持ちの10%をベットする
   def set_bet_amount
     @bet_size = @money / 10
     @money -= @bet_size
+  end
+
+  # サレンダーの判断基準を満たしているか判定する
+  def surrender?(dealer_score)
+    # 得点が15か16以外の場合､falseを返す
+    return false unless [15, 16].include?(score)
+    
+    # 以下に当てはまる場合､trueを返す
+    case score
+    when 15
+      dealer_score == 10
+    when 16
+      [9, 10, 11].include?(dealer_score)
+    end
+  end
+
+  # プレーヤーオプションを選択する
+  def player_options(dealer_score)
+    # サレンダーの判断基準を満たしている場合､サレンダーする
+    if surrender?(dealer_score)
+      @surrender_flag = true
+      @money += (@bet_size / 2)
+      @@player_count -= 1
+      puts "#{@name}はサレンダーしました｡"
+      puts "#{@name}の持ち金は#{@money}円です。"
+      return
+    end
   end
 
   # カードを引くかどうかを決める

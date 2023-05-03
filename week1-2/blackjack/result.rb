@@ -9,8 +9,8 @@ class Result
   def judge
     puts '結果発表！' 
     @players.each do |player|
-      # プレーヤーがバーストしていた場合､次のプレーヤーの判定へ
-      next if player.score > 21
+      # プレーヤーがサレンダーまたはバーストしていた場合
+      next if player.score > 21 || player.surrender_flag
 
       # プレーヤーかディーラーにブラックジャックフラグが立っている場合
       if player.blackjack_flag 
@@ -33,7 +33,6 @@ class Result
       else 
         player.money += player.bet_size
         puts "#{player.name}は引き分けです｡"
-        next
       end
       # プレーヤーの持ち金を表示
       puts "#{player.name}の持ち金は#{player.money.to_i}です｡"
