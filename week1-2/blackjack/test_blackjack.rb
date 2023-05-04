@@ -14,6 +14,4 @@ class TestBlackJack < Minitest::Test
     dealer.cards = [Card.new('ハート', 10)]
     assert_equal  true, cpu.surrender?(dealer.cards[0].number)
   end
-
-  
 end

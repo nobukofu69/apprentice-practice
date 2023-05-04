@@ -51,14 +51,23 @@ class Player
   end
 
   # プレーヤーオプションを選択する
-  def player_options(dealer_score)
+  def player_options(dealer_up_card)
     while true
-      puts "現在の得点: #{score}, ディーラーの得点: #{dealer_score}"
-      puts "オプション:\n 1:ダブルダウン 2:スプリット 3:サレンダー 4:選択しない"
+      puts "現在の得点: #{score}, ディーラーのアップカード: #{dealer_up_card}"
+      puts "オプション:\n 1:ダブルダウン 2:スプリット 3:サレンダー 4:Exit"
       selected = gets.chomp.to_i
       case selected
+      # ダブルダウン
       when 1
-        double_down
+        # ダブルダウン用のベッド額が払える場合
+        if @bet_size <= @money
+          @money -=  @bet_size
+          @bet_size *= 2
+          @double_down_flag = true
+          return
+        else
+          puts 'お金が足りません'
+        end
       when 2
         splitting_pairs
       # サレンダー
@@ -96,6 +105,13 @@ class Player
   def hit_or_stand(deck)
     # ブラックジャックまたはサレンダーの場合､メソッドを抜ける
     return if @blackjack_flag || @surrender_flag
+
+    # ダブルダウンしている場合､カードを1枚引いてメソッドを抜ける
+    if @double_down_flag
+      draw(deck)
+      puts "#{@name}の引いたカードは#{@cards.last}です。"
+      return
+    end
 
     # 21点未満の場合､Nを押すまでカードを引くか選択し続ける
     while score < 21
