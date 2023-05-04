@@ -23,24 +23,56 @@ class Cpu < Player
     @money -= @bet_size
   end
 
+  # ダブルダウンの判断基準を満たしているか判定する
+  def double_down?(dealer_up_card)
+    # 手札が5のペア､または手札にAが含まれるという条件を満たさない場合､メソッドを抜ける
+    unless (cards[0].number == cards[1].number && score == 10) ||
+           (cards[0].number == 11) || (cards[1].number == 11)
+      return false
+    end
+
+    # 手札が5のペアかつディーラーのアップカードが2から9の場合､trueを返す
+    if cards[0].number == cards[1].number && dealer_up_card.number.between?(2, 9)
+      return true
+    end
+    
+    # 手札にAが含まれる場合の条件分岐
+    case dealer_up_card.number
+    when 2
+      score == 18
+    when 3
+      score.between?(17, 18)
+    when 4
+      score.between?(15, 18)
+    when 5
+      score.between?(13, 18)
+    when 6
+      score.between?(13, 19)
+    else
+      false
+    end
+  end
+
   # サレンダーの判断基準を満たしているか判定する
-  def surrender?(dealer_score)
-    # 得点が15か16以外の場合､falseを返す
-    return false unless [15, 16].include?(score)
+  def surrender?(dealer_up_card)
+    # 得点が15,16以外の場合､falseを返す
+    return false if ![15, 16].include?(score)
     
     # 以下に当てはまる場合､trueを返す
     case score
     when 15
-      dealer_score == 10
+      dealer_up_card.number == 10
     when 16
-      [9, 10, 11].include?(dealer_score)
+      [9, 10, 11].include?(dealer_up_card.number)
+    else
+      false
     end
   end
 
   # プレーヤーオプションを選択する
-  def player_options(dealer_score)
+  def player_options(dealer_up_card)
     # サレンダーの判断基準を満たしている場合､サレンダーする
-    if surrender?(dealer_score)
+    if surrender?(dealer_up_card)
       @surrender_flag = true
       @money += (@bet_size / 2)
       @@player_count -= 1

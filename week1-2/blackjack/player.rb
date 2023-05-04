@@ -45,15 +45,15 @@ class Player
     end
   end
 
-  # 現在の得点を表示する
-  def score
-    Hand.new(@cards).score
+  # 配列として受け取った手札の得点を表示する.
+  def score(value = @cards)
+    Hand.new(value).score
   end
 
   # プレーヤーオプションを選択する
   def player_options(dealer_up_card)
     while true
-      puts "現在の得点: #{score}, ディーラーのアップカード: #{dealer_up_card}"
+      puts "現在の得点: #{score}, ディーラーの得点: #{score([dealer_up_card])}"
       puts "オプション:\n 1:ダブルダウン 2:スプリット 3:サレンダー 4:Exit"
       selected = gets.chomp.to_i
       case selected
