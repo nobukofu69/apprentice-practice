@@ -27,7 +27,7 @@ class Game
     # ブラックジャックだった場合､メッセージを表示する
     @player_members.each do |member| 
       member.deal(@deck) 
-      member.announce_blackjack
+      member.check_blackjack
     end
     
     # ディーラーにカードを2枚配る｡
@@ -41,10 +41,8 @@ class Game
     end
 
     # プレーヤーがヒットするかスタンドするかを決める｡
-    # またプレーヤーがバーストしていた場合､メッセージを表示する
     @player_members.each do |member|
       member.hit_or_stand(@deck)
-      member.check_burst
     end
 
     # アクティブなプレーヤーがいない場合､ゲームを終了する
@@ -56,11 +54,9 @@ class Game
     # 参加プレーヤーが残っている場合､ディーラーの2枚目のカードを表示する
     puts "#{@dealer.name}の引いた2枚目のカードは#{@dealer.cards[1]}でした。"
     # ディーラーがブラックジャックだった場合､メッセージを表示する
-    @dealer.announce_blackjack
+    @dealer.check_blackjack
     # ディーラーが17点以上になるまでヒットする
     @dealer.auto_hit(@deck)
-    # ディーラーがバーストしていた場合､メッセージを表示する
-    @dealer.check_burst
     
     # 結果を表示する
     Result.new(@dealer, @player_members).judge

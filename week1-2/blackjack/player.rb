@@ -3,9 +3,9 @@ require_relative 'hand'
 
 class Player
   @@player_count ||= 0
-  attr_reader :name, :bet_size, 
-              :blackjack_flag, :double_down_flag, :splitting_pairs, :surrender_flag
-  attr_accessor :money,:cards
+  attr_reader :name, :bet_size, :blackjack_flag, :splitting_pairs_flag,
+              :surrender_flag, :splitting_pairs
+  attr_accessor :money,:cards, :cards2, :bet_size, :double_down_flag
 
   # プレイヤーの人数を返すクラス
   def self.player_count
@@ -21,7 +21,7 @@ class Player
     # 以下各種フラグ
     @blackjack_flag = false
     @double_down_flag = false
-    @splitting_pairs = false
+    @splitting_pairs_flag = false
     @surrender_flag = false
   end
 
@@ -68,8 +68,21 @@ class Player
         else
           puts 'お金が足りません'
         end
+      # スプリット
       when 2
-        splitting_pairs
+        # 手札がペアではない､またはスプリット用のベッド額が払えない場合
+        unless @cards[0].number == @cards[1].number && @bet_size <= @money
+          puts 'スプリットできません'
+          next
+        end
+        # スプリットできる場合
+        @money -= @bet_size
+        @splitting_pairs_flag = true
+        # 2枚目のカードを別の配列に移す
+        @cards2 = [@cards.pop]
+        # 分けた手札を更に配列として管理する
+        @splitting_pairs = [@cards, @cards2]
+        return
       # サレンダー
       when 3 
         # サレンダーフラグ立ち､ベット額の半分が返ってくる
@@ -94,7 +107,7 @@ class Player
   end
 
   # ブラックジャックだった場合､メッセージを表示してフラグを立てる
-  def announce_blackjack
+  def check_blackjack
     if score == 21 && @cards.size == 2
       puts "#{@name}はブラックジャックです！" 
       @blackjack_flag = true
@@ -106,10 +119,51 @@ class Player
     # ブラックジャックまたはサレンダーの場合､メソッドを抜ける
     return if @blackjack_flag || @surrender_flag
 
+    # スプリットしている場合の処理
+    if @splitting_pairs_flag
+      @splitting_pairs.each_with_index do |cards, i|
+        while score(cards) < 21
+          puts "#{@name}の手札#{i + 1}の得点は#{score(cards)}です。カードを引きますか？（Y/N）"
+          answer = gets.chomp.downcase
+          # yが入力された場合､カードを引く
+          if answer == 'y'
+            draw(deck)
+            puts "#{@name}の引いたカードは#{cards.last}です。"
+          # nが入力された場合､スタンドする
+          elsif answer == 'n'
+            puts "#{@name}は手札#{i + 1}でスタンドしました｡"
+            # whileを抜ける
+            break
+          # y/n以外が入力された場合､もう一度入力を促す
+          else 
+            puts 'YまたはNを入力してください｡'
+            next
+          end
+        end
+        # whileを抜けた時点の手札が21点の場合､スタンドする
+        if score(cards) == 21
+          puts "#{@name}の手札#{i + 1}の得点は#{score(cards)}です。"
+          puts "#{@name}は手札#{i + 1}でスタンドしました｡"
+        end
+
+        # バーストしているかを確認する
+        display_burst
+
+        # 手札1の場合､手札2に移る
+        next if i == 0
+        # 手札2の場合､メソッドを抜ける
+        return
+      end
+    end
+
     # ダブルダウンしている場合､カードを1枚引いてメソッドを抜ける
     if @double_down_flag
       draw(deck)
       puts "#{@name}の引いたカードは#{@cards.last}です。"
+      # 21点を超えている場合､バーストしてメソッドを抜ける
+      return display_burst if score > 21
+      # 21点以下の場合
+      puts "#{@name}の得点は#{score}です。"
       return
     end
 
@@ -126,7 +180,8 @@ class Player
         puts "#{@name}はスタンドしました｡"
         return
       # y/n以外が入力された場合､もう一度入力を促す
-      else 
+      else
+        puts 'YまたはNを入力してください｡'
         next
       end
     end
@@ -134,16 +189,32 @@ class Player
     if score == 21
       puts "#{@name}の得点は#{score}です。"
       puts "#{@name}はスタンドしました｡"
+    # ループを抜けた時点で21点を超えている場合､バーストする
+    else 
+      display_burst
     end
   end
 
   # バーストしていた場合､プレイヤーの人数を減らしてメッセージを表示する
-  def check_burst
-    if score > 21
-      puts "#{@name}の得点は#{score}です。"
+  def display_burst(value = @cards, i = 0)
+    # 非スプリットで21点を超えた場合
+    if !@splitting_pairs_flag
+      puts "#{@name}の得点は#{score(value)}です。"
       puts "#{@name}はバーストしました｡"
       puts "#{@name}の持ち金は#{@money}円です。"
       @@player_count -= 1
+      return
     end
+    
+    # スプリットした手札で21点を超えた場合
+    if score(value) > 21
+      puts "#{@name}の手札#{i + 1}の得点は#{score(value)}です。"
+      puts "#{@name}はバーストしました｡"
+    # スプリットした手札で21点以下の場合､処理をぬける
+    elsif @splitting_pairs_flag && score(value) <= 21
+      return
+    end
+  
+    # スプリットした全ての手札で21点を超えた場合､プレイヤーの人数を減らす
   end
 end

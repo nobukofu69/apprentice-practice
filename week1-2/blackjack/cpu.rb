@@ -25,18 +25,23 @@ class Cpu < Player
 
   # ダブルダウンの判断基準を満たしているか判定する
   def double_down?(dealer_up_card)
+    # ダブルダウン用のベッド額が払えない場合､メソッドを抜ける
+    return false if @bet_size > @money
     # 手札が5のペア､または手札にAが含まれるという条件を満たさない場合､メソッドを抜ける
     unless (cards[0].number == cards[1].number && score == 10) ||
-           (cards[0].number == 11) || (cards[1].number == 11)
+           (cards[0].number == 11) || 
+           (cards[1].number == 11)
       return false
     end
 
-    # 手札が5のペアかつディーラーのアップカードが2から9の場合､trueを返す
-    if cards[0].number == cards[1].number && dealer_up_card.number.between?(2, 9)
+    # 手札が5のペア､かつ､ディーラーのアップカードが2から9の場合､trueを返す
+    if (cards[0].number == cards[1].number) && 
+      score == 10 &&
+      dealer_up_card.number.between?(2, 9)
       return true
     end
-    
-    # 手札にAが含まれる場合の条件分岐
+
+    # 手札にAが含まれ､かつ､以下に当てはまる場合､trueを返す
     case dealer_up_card.number
     when 2
       score == 18
@@ -71,6 +76,15 @@ class Cpu < Player
 
   # プレーヤーオプションを選択する
   def player_options(dealer_up_card)
+    # ダブルダウンの判断基準を満たしている場合､ダブルダウンする
+    if double_down?(dealer_up_card)
+      puts "#{@name}はダブルダウンしました｡"
+      @money -=  @bet_size
+      @bet_size *= 2
+      @double_down_flag = true
+      return
+    end
+
     # サレンダーの判断基準を満たしている場合､サレンダーする
     if surrender?(dealer_up_card)
       @surrender_flag = true
@@ -84,8 +98,20 @@ class Cpu < Player
 
   # カードを引くかどうかを決める
   def hit_or_stand(deck)
-    # ブラックジャックの場合､メソッドを抜ける
-    return if @blackjack_flag
+    # ブラックジャックまたはサレンダーの場合､メソッドを抜ける
+    return if @blackjack_flag || @surrender_flag
+
+    # ダブルダウンしている場合､カードを1枚引いてメソッドを抜ける
+    if @double_down_flag
+      draw(deck)
+      puts "#{@name}の引いたカードは#{@cards.last}です。"
+      # 21点を超えている場合､バーストしてメソッドを抜ける
+      return display_burst if score > 21
+      # 21点以下の場合
+      puts "#{@name}の得点は#{score}です。"
+      return
+    end
+
     puts "#{@name}の現在の得点は#{score}です｡"
     # 17点以上の場合､スタンドする
     if score >= 17
@@ -99,11 +125,12 @@ class Cpu < Player
       puts "#{@name}の引いたカードは#{@cards.last}です。"
     end
 
-    # 21点を超えた場合､メソッドを抜ける
-    return if score > 21
-
-    # 17点以上の場合､スタンドする
-    puts "#{@name}の得点は#{score}です｡"
-    puts "#{@name}はスタンドしました｡"
+    # ループを抜けた時点の得点に応じて処理を行う
+    if score > 21
+      return display_burst
+    else
+      puts "#{@name}の得点は#{score}です｡"
+      puts "#{@name}はスタンドしました｡"
+    end
   end
 end
