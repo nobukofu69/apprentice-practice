@@ -20,8 +20,6 @@ class Game
 
   def play
     puts 'ブラックジャックを開始します。'
-    binding.break
-
     # プレーヤーがべットする
     @player_members.each { |member| member.set_bet_amount}
 
@@ -38,7 +36,7 @@ class Game
     # 非ブラックジャックのプレーヤーにオプションを表示､選択させる
     @player_members.each do |member| 
       unless member.blackjack_flag 
-        member.player_options(@dealer.cards[0].number)
+        member.player_options(@dealer.cards[0])
       end
     end
 

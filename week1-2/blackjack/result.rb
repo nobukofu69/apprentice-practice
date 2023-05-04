@@ -23,16 +23,22 @@ class Result
         puts "#{player.name}の持ち金は#{player.money.to_i}です｡"
         next
       end
-
-      # プレーヤーとディーラーのブラックジャックフラグが同じ場合
+      
+      # プレーヤーとディーラーのブラックジャックフラグが揃っている場合
       if @dealer.score > 21 || player.score > @dealer.score
-        player.money += player.bet_size * 2
         puts "#{player.name}の勝ちです！"
+        player.money += player.bet_size * 2
       elsif player.score < @dealer.score
         puts "#{player.name}の負けです｡"
       else 
-        player.money += player.bet_size
         puts "#{player.name}は引き分けです｡"
+        # ダブルダウンの場合､最初のベット額を払い戻し
+        if player.double_down_flag
+          player.money += (player.bet_size / 2)
+        # 非ダブルダウンの場合､ベット額が払い戻し
+        else
+          player.money += player.bet_size
+        end
       end
       # プレーヤーの持ち金を表示
       puts "#{player.name}の持ち金は#{player.money.to_i}です｡"
