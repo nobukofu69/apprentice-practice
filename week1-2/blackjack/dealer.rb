@@ -29,15 +29,17 @@ class Dealer < Player
       puts "#{@name}の引いたカードは#{@cards.last}です。"
     end
 
-    # ループを抜けた時点で21点以下の場合､メッセージを表示する
-    puts "#{@name}の得点は#{score}です｡" if score <= 21
+    # ループを抜けた時点の得点に応じて処理を行う
+    if score > 21
+      return display_burst
+    else
+      puts "#{@name}の得点は#{score}です｡"
+    end
   end
 
   # バーストしていた場合､メッセージを表示する
-  def check_burst
-    if score > 21
-      puts "#{name}の得点は#{score}です。"
-      puts "#{name}はバーストしました"
-    end
+  def display_burst
+    puts "#{@name}の得点は#{score}です。"
+    puts "#{@name}はバーストしました｡"
   end
 end

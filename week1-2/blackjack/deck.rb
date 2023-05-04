@@ -2,6 +2,8 @@ require 'debug'
 require_relative 'card'
 
 class Deck
+  attr_accessor :cards
+
   def initialize
     @cards = []
     Card::SUIT.each do |suit|
