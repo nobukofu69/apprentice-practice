@@ -1,26 +1,35 @@
-# ベースイメージとしてUbuntuを選択
-FROM ubuntu:latest
+# Use Ubuntu 20.04 as the base image
+FROM ubuntu:20.04
 
+# Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
+ENV PG_VERSION=13
+ENV PG_HBA_CONF=/etc/postgresql/${PG_VERSION}/main/pg_hba.conf
+ENV POSTGRES_CONF=/etc/postgresql/${PG_VERSION}/main/postgresql.conf
 
+# Update the package list and install required packages
 RUN apt-get update && \
-    apt-get install -y gnupg && \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32 && \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C && \
+    apt-get install -y wget lsb-release gnupg2 && \
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
+    echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list && \
     apt-get update && \
-    apt-get install -y postgresql postgresql-contrib
+    apt-get install -y postgresql-${PG_VERSION}
 
-# PostgreSQLのデータディレクトリを初期化
-RUN service postgresql start && \
-    service postgresql stop
+# Allow connections from any IP address
+RUN echo "host all all 0.0.0.0/0 md5" >> ${PG_HBA_CONF} && \
+    echo "listen_addresses='*'" >> ${POSTGRES_CONF}
 
-# PostgreSQLの設定ファイルを変更してリモートアクセスを許可する
-RUN sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" /etc/postgresql/*/main/postgresql.conf && \
-    echo "host all all 0.0.0.0/0 md5" >> /etc/postgresql/*/main/pg_hba.conf
+# Change user to postgres
+USER postgres
 
-# PostgreSQLサーバーの起動スクリプトを作成
-RUN echo "#!/bin/bash\nservice postgresql start\nbash" > /start_postgres.sh && \
-    chmod +x /start_postgres.sh
+# Create a new database and user with privileges
+RUN /etc/init.d/postgresql start && \
+    psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';" && \
+    createdb -O docker docker && \
+    /etc/init.d/postgresql stop
 
-# コンテナ内でデフォルトで実行されるコマンドを設定
-CMD [ "/start_postgres.sh" ]
+# Expose the PostgreSQL port
+EXPOSE 5432
+
+# Set the default command to run when starting the container
+CMD ["/usr/lib/postgresql/13/bin/postgres", "-D", "/var/lib/postgresql/13/main", "-c", "config_file=/etc/postgresql/13/main/postgresql.conf"]
