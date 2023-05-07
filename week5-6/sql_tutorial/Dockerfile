@@ -1,11 +1,10 @@
-# Use the official MySQL 8.0 image as base
 FROM mysql:8.0
 
 # Set environment variables
 ENV MYSQL_DATABASE=mydb
 ENV MYSQL_USER=docker
 ENV MYSQL_PASSWORD=docker
-ENV MYSQL_ROOT_PASSWORD=rootpassword
+ENV MYSQL_ROOT_PASSWORD=root
 
 # Set the timezone
 ENV TZ=UTC
