@@ -52,7 +52,7 @@ do
         service=$(echo "$grep_result" | sed -E 's/^(.+):(.+):(.+)$/\1/')
         user=$(echo "$grep_result" | sed -E 's/^(.+):(.+):(.+)$/\2/')
         password=$(echo "$grep_result" | sed -E 's/^(.+):(.+):(.+)$/\3/')
-        echo -e "サービス名:$service\nユーザー名:$user\nパスワード:$password"
+        echo -e "\nサービス名:$service\nユーザー名:$user\nパスワード:$password\n"
       else
         echo -e "\nそのサービスは登録されていません。"
       fi
@@ -65,5 +65,5 @@ do
     * ) # 選択肢以外の入力があった場合はエラーメッセージを表示してループの先頭に戻る
       echo -e "\n入力が間違えています。Add Password/Get Password/Exit から入力してください。"
       ;;
-  esac
+  esac        
 done
