@@ -6,7 +6,7 @@ passphrase=$GPG_PASSPHARASE
 encrypted_file="managed_passwd.txt.gpg"
 
 echo "パスワードマネージャーへようこそ！"
-while : # Exitが入力されるまでループ
+while : # Exit が入力されるまでループ
 do
   read -p "次の選択肢から入力してください(Add Password/Get Password/Exit): " input
   case $input in
@@ -31,12 +31,12 @@ do
       # 一時ファイルを削除
       rm temp.txt
       
-      echo "パスワードの追加は成功しました。"
+      echo -e "\n\nパスワードの追加は成功しました。"
       ;;
     "Get Password" )
       # 暗号化ファイルがなければループの先頭に戻る
       if [ ! -e $encrypted_file ]; then
-        echo "パスワードが登録されていません。"
+        echo -e "\nパスワードが登録されていません。"
         continue
       fi
 
@@ -54,16 +54,16 @@ do
         password=$(echo "$grep_result" | sed -E 's/^(.+):(.+):(.+)$/\3/')
         echo -e "サービス名:$service\nユーザー名:$user\nパスワード:$password"
       else
-        echo "そのサービスは登録されていません。"
+        echo -e "\nそのサービスは登録されていません。"
       fi
       rm temp.txt
       ;;
     "Exit" ) # Exitが入力されたらループを抜ける
-      echo "Thank you"
+      echo -e "\nThank you"
       break
       ;;
-    * ) # 上記以外の入力があった場合はエラーメッセージを表示してループの先頭に戻る
-      echo "入力が間違えています。Add Password/Get Password/Exit から入力してください。"
+    * ) # 選択肢以外の入力があった場合はエラーメッセージを表示してループの先頭に戻る
+      echo -e "\n入力が間違えています。Add Password/Get Password/Exit から入力してください。"
       ;;
   esac
 done
