@@ -47,8 +47,6 @@ entity "genres" as genres {
 entity "program_genres" as program_genres {
     * program_id [PK, FK(programs, id)]
     * genre_id [PK, FK(genres, id)]
-    --
-
 }
 
 channels ||--o{ tv_schedules
