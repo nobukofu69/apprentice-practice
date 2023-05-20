@@ -54,7 +54,7 @@ CREATE TABLE genres (
 );
 
 CREATE TABLE program_genres (
-    PRIMARY KEY(program_id),
+    PRIMARY KEY(program_id, genre_id),
     program_id BIGINT NOT NULL,
     genre_id   INT NOT NULL,
     FOREIGN KEY (program_id) REFERENCES programs(id),
