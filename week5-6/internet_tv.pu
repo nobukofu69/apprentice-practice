@@ -1,0 +1,60 @@
+@startuml
+skinparam shadowing false
+hide empty members
+
+entity "channels" as channels {
+    * id [PK]
+    --
+    name
+}
+
+entity "programs" as programs {
+    * id [PK]
+    --
+    programs_title
+    program_info
+}
+
+entity "episodes" as episodes {
+    * id [PK]
+    --
+    season_num
+    episode_num
+    episode_title
+    episode_info
+    video_time
+    release_date
+    views
+    + program_id [FK(programs, id)]
+}
+
+entity "tv_schedules" as tv_schedules {
+    * id [PK]
+    --
+    + channel_id [FK(channels, id)]
+    start_time
+    end_time
+    views
+    + episode_id [FK(episodes, id)]
+}
+
+entity "genres" as genres {
+    * id [PK]
+    --
+    name
+}
+
+entity "program_genres" as program_genres {
+    * program_id [PK, FK(programs, id)]
+    --
+    + genre_id [FK(genres, id)]
+}
+
+
+channels ||--o{ tv_schedules
+programs ||--|{ program_genres
+programs ||--|{ episodes
+genres ||--|{ program_genres
+episodes ||--o{ tv_schedules
+
+@enduml
