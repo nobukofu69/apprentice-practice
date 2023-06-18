@@ -19,4 +19,12 @@ RealWorld の API のうち、次のエンドポイントを実装してくだ�
 なお、Article に関わる要素のうち、認証機能及び著者、タグ、お気に入り(favorite) は実装しなくてよいものとします。
 
 ## 動作確認
-テスト
+以下を実行することで､ステップ1のCRUDが正常に動作することを確認できます｡
+```
+rails test:controllers
+```
+テストの詳細については､[articles_controller_test.rb](https://github.com/nobukofu69/apprentice-practice/blob/main/week9-10/real_world_app/test/controllers/articles_controller_test.rb
+)を確認してください｡
+
+
+
