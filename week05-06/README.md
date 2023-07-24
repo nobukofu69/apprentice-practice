@@ -3,8 +3,8 @@
 
 [テーブル設計](https://docs.google.com/spreadsheets/d/e/2PACX-1vRRgotTJjfhbQa5ZB6WhS8x89YstEGCYS36gFbrUjAGhQG5_h20baJfE8GjMi7BQtp3yIEZJqzW1QPc/pubhtml?gid=417302730&single=true)
 
-[ER図](https://github.com/nobukofu69/apprentice-practice/blob/main/week5-6/internet_tv.pu)
-<img src="https://github.com/nobukofu69/apprentice-practice/blob/main/week5-6/er.png">
+[ER図](https://github.com/nobukofu69/apprentice-practice/blob/main/week05-06/internet_tv.pu)
+<img src="https://github.com/nobukofu69/apprentice-practice/blob/main/week05-06/er.png">
 
 ## ステップ2
 1. [internet_tv.sql](https://github.com/nobukofu69/apprentice-practice/blob/main/week5-6/internet_tv.sql)が配置されたディレクトリに移動します｡
@@ -26,4 +26,4 @@ show tables;
 SELECT * FROM テーブル名;
 ```
 ## ステップ3
-[quest_step3.sql](https://github.com/nobukofu69/apprentice-practice/blob/main/week5-6/quest_step3.sql)で回答しました｡
+[quest_step3.sql](https://github.com/nobukofu69/apprentice-practice/blob/main/week05-06/quest_step3.sql)で回答しました｡
